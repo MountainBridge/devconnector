@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
-//@post api/users, @access Public, @desc test route
+//@post api/users, @access Public, @desc register a user
 //adding validations on the request received for users
 router.post('/',
 [   check('name', 'Name is required').not().isEmpty(),
