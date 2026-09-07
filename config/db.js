@@ -1,20 +1,14 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
-mongoose.set('strictQuery', false);
 
-const connectDB = async() => {
-    try {
-        await mongoose.connect(db, {
-            useNewUrlParser: true
-        });
-        console.log('Connected to Mongo DB');
-    }
-    catch(err){
-        console.error(err.message);
-        //Exit process with failure
-        process.exit(1);
-    }
-    }
+const connectDB = async () => {
+  const mongoURI = process.env.MONGO_URI;
+
+  if (!mongoURI) {
+    throw new Error('MONGO_URI is required');
+  }
+
+  await mongoose.connect(mongoURI);
+  console.log('Connected to MongoDB');
+};
 
 module.exports = connectDB;
