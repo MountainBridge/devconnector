@@ -7,21 +7,11 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json({ extended: false }));
 
-app.get('/', (req, res) => res.json({
-  service: 'devconnector-api',
-  status: 'ok'
-}));
-
-app.get('/health/live', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
+app.get('/', (req, res) => res.json({ service: 'devconnector-api', status: 'ok' }));
+app.get('/health/live', (req, res) => res.status(200).json({ status: 'ok' }));
 app.get('/health/ready', (req, res) => {
   const ready = mongoose.connection.readyState === 1;
-  res.status(ready ? 200 : 503).json({
-    status: ready ? 'ready' : 'not_ready',
-    mongodb: ready ? 'connected' : 'disconnected'
-  });
+  res.status(ready ? 200 : 503).json({ status: ready ? 'ready' : 'not_ready', mongodb: ready ? 'connected' : 'disconnected' });
 });
 
 app.use('/api/users', require('./routes/api/users'));
@@ -33,15 +23,10 @@ const start = async () => {
   try {
     await connectDB();
     const server = app.listen(PORT, () => console.log(`API listening on ${PORT}`));
-
     const shutdown = async (signal) => {
       console.log(`${signal} received; shutting down`);
-      server.close(async () => {
-        await mongoose.connection.close();
-        process.exit(0);
-      });
+      server.close(async () => { await mongoose.connection.close(); process.exit(0); });
     };
-
     process.on('SIGTERM', () => shutdown('SIGTERM'));
     process.on('SIGINT', () => shutdown('SIGINT'));
   } catch (err) {
@@ -50,6 +35,5 @@ const start = async () => {
   }
 };
 
-start();
-
+if (require.main === module) start();
 module.exports = app;
